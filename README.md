@@ -55,11 +55,3 @@ curl http://localhost:8080/cart
 ```
 
 Delivery is ₹30 (3000 paise), free when the item total crosses ₹500 (50000 paise).
-
-## A few decisions I made
-
-- **Money as paise (integers) everywhere** — floats are unreliable for currency. Storing ₹25 as `2500` keeps all arithmetic exact.
-- **Single global cart, no auth** — the assignment didn't need it, so I didn't build it. Adding user-scoped carts later would just mean adding a `userId` foreign key to `CartItem`.
-- **Bill computed at request time in the service layer** — never stored. This means the total is always accurate even if product prices change.
-- **H2 for tests, MySQL for production** — tests run with `@ActiveProfiles("test")` and an in-memory H2 database so you don't need MySQL running in CI.
-- **`INSERT IGNORE` in data.sql** — makes the seed idempotent. Restarting the app won't duplicate the 10 products.
