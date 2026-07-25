@@ -24,7 +24,7 @@ public class CartController
         return ResponseEntity.ok(CartItemResponse.from(cartItem));
     }
 
-    @PatchMapping("/cart/items/{productId}")
+    @PatchMapping("/items/{productId}")
     public ResponseEntity<Void> updateProduct(@PathVariable long productId, @RequestBody CartUpdateRequestDto cartUpdateRequestDto)
     {
         cartService.updateProduct(productId,cartUpdateRequestDto);

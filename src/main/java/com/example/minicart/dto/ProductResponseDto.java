@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 public class ProductResponseDto
 {
+    private long id;
     private String name;
     private long paise;
     private String unit;
@@ -26,13 +27,13 @@ public class ProductResponseDto
         return responseDtos;
     }
 
-    private static ProductResponseDto convert(Product product)
+    public static ProductResponseDto convert(Product product)
     {
-        ProductResponseDto productResponseDto = new ProductResponseDto();
-        productResponseDto.setName(product.getName());
-        productResponseDto.setPaise(productResponseDto.getPaise());
-        productResponseDto.setUnit(productResponseDto.getUnit());
-
-        return productResponseDto;
+        ProductResponseDto dto = new ProductResponseDto();
+        dto.setId(product.getId());
+        dto.setName(product.getName());
+        dto.setPaise(product.getPaise());
+        dto.setUnit(product.getUnit());
+        return dto;
     }
 }

@@ -8,19 +8,27 @@ import com.example.minicart.models.CartItem;
 import com.example.minicart.models.Product;
 import com.example.minicart.repositories.CartRepository;
 import com.example.minicart.repositories.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class CartServiceImpl implements CartService
 {
-    CartRepository cartRepository;
-    ProductRepository productRepository;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
+
     @Override
     public CartItem addProduct(CartAddRequestDto cartRequestDto) throws ProductNotFoundException
     {
+        if (cartRequestDto.getQuantity() <= 0)
+        {
+            throw new CartQuantityException("Quantity must be greater than 0");
+        }
+
         Optional<CartItem> optionalCartItem = cartRepository.findByProductId(cartRequestDto.getProductId());
 
         if(optionalCartItem.isEmpty())
@@ -28,7 +36,7 @@ public class CartServiceImpl implements CartService
             Optional<Product> optionalProduct = productRepository.findById(cartRequestDto.getProductId());
             if(optionalProduct.isEmpty())
             {
-                throw new ProductNotFoundException("Product with "+ cartRequestDto.getProductId()+ " not Found");
+                throw new ProductNotFoundException("Product with id "+ cartRequestDto.getProductId()+ " not found");
             }
             CartItem cartItem = new CartItem();
             cartItem.setProduct(optionalProduct.get());
@@ -37,8 +45,7 @@ public class CartServiceImpl implements CartService
         }
 
         CartItem cartItem = optionalCartItem.get();
-        // updating the cart quantity
-        cartItem.setQuantity(cartItem.getQuantity()+cartRequestDto.getQuantity());
+        cartItem.setQuantity(cartItem.getQuantity() + cartRequestDto.getQuantity());
         return cartRepository.save(cartItem);
     }
 
@@ -93,7 +100,7 @@ public class CartServiceImpl implements CartService
         if(itemTotalPaise >50000) deliveryFeePaise = 0;
 
         BillDto billDto = new BillDto();
-        billDto.setTotalPaise(itemTotalPaise);
+        billDto.setItemTotalPaise(itemTotalPaise);
         billDto.setDeliveryFeePaise(deliveryFeePaise);
         billDto.setGrandTotalPaise(itemTotalPaise+deliveryFeePaise);
 

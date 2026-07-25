@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class BillDto
 {
-    private long totalPaise;
+    private long itemTotalPaise;
     private long deliveryFeePaise;
     private long grandTotalPaise;
 }
