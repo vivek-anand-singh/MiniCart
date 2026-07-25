@@ -2,6 +2,7 @@ package com.example.minicart.controllers;
 
 import com.example.minicart.dto.CartAddRequestDto;
 import com.example.minicart.dto.CartItemResponse;
+import com.example.minicart.dto.CartTotalResponseDto;
 import com.example.minicart.dto.CartUpdateRequestDto;
 import com.example.minicart.models.CartItem;
 import com.example.minicart.services.CartService;
@@ -30,5 +31,10 @@ public class CartController
         return ResponseEntity.noContent().build();
     }
 
-    
+    @GetMapping("")
+    public ResponseEntity<CartTotalResponseDto> getTotal()
+    {
+        CartTotalResponseDto cartTotalResponseDto = cartService.cartTotalResponse();
+        return ResponseEntity.ok(cartTotalResponseDto);
+    }
 }
