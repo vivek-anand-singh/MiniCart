@@ -108,7 +108,24 @@ class MiniCartApplicationTests {
     }
 
     @Test
-    void patchCart_setQuantityToZero_removesItem() throws Exception {
+    void patchCart_deltaReducesQuantity() throws Exception {
+        mockMvc.perform(post("/cart/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"productId\": 1, \"quantity\": 5}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/cart/items/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"quantity\": -2}"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/cart"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items[0].quantity").value(3));
+    }
+
+    @Test
+    void patchCart_deltaToZero_removesItem() throws Exception {
         mockMvc.perform(post("/cart/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"productId\": 1, \"quantity\": 3}"))
@@ -116,12 +133,26 @@ class MiniCartApplicationTests {
 
         mockMvc.perform(patch("/cart/items/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"quantity\": 0}"))
+                        .content("{\"quantity\": -3}"))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/cart"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.items.length()").value(0));
+    }
+
+    @Test
+    void patchCart_deltaMakesTotalNegative_returns400() throws Exception {
+        mockMvc.perform(post("/cart/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"productId\": 1, \"quantity\": 2}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/cart/items/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"quantity\": -5}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").exists());
     }
 
     @Test

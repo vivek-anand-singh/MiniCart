@@ -60,17 +60,17 @@ public class CartServiceImpl implements CartService
 
         CartItem cartItem = optionalCartItem.get();
 
-        long quantity = cartUpdateRequestDto.getQuantity();
-        if(quantity == 0)
+        long newQuantity = cartItem.getQuantity() + cartUpdateRequestDto.getQuantity();
+        if(newQuantity < 0)
+        {
+            throw new CartQuantityException("Total quantity cannot be negative");
+        }
+        if(newQuantity == 0)
         {
             cartRepository.delete(cartItem);
             return;
         }
-        if(quantity < 0)
-        {
-            throw new CartQuantityException("Cart Quantity is invalid "+ quantity);
-        }
-        cartItem.setQuantity(quantity);
+        cartItem.setQuantity(newQuantity);
         cartRepository.save(cartItem);
     }
 
